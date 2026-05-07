@@ -10,7 +10,7 @@ const client = createClient({
 
 async function main() {
   const posts = await client.fetch(`*[_type == "post"][0..2]{title, content}`);
-  posts.forEach(post => {
+  posts.forEach((post: any) => {
     console.log(`--- ${post.title} ---`);
     console.log(post.content.substring(0, 500));
   });

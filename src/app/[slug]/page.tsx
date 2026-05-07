@@ -63,13 +63,16 @@ function cleanWordPressHtml(html: string): string {
     },
     transformTags: {
       // Make external links open in new tab with noopener
-      'a': (tagName: string, attribs: Record<string, string>, text: string) => {
+      'a': (tagName: string, attribs: Record<string, string>) => {
         const href = attribs.href || ''
         const isExternal = href.startsWith('http') && !href.includes('ma-draisienne-electrique.fr')
         
-        // Detect button-like links
-        const buttonTexts = ['voir le prix', 'acheter', 'découvrir', 'commander', 'profiter', 'en savoir plus']
-        const isButton = buttonTexts.some(bt => text?.toLowerCase()?.includes(bt)) || (attribs.class && attribs.class.includes('button'))
+        // Detect button-like links (fallback to class only since sanitize-html doesn't provide text here)
+        const isButton = (attribs.class && (
+          attribs.class.includes('button') || 
+          attribs.class.includes('btn') || 
+          attribs.class.includes('wp-block-button')
+        ))
         
         return {
           tagName,

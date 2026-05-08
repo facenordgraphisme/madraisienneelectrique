@@ -38,7 +38,7 @@ function getImageProps(post: SanityPost) {
 
 export default function ArticleCard({ post, priority = false }: ArticleCardProps) {
   const img = getImageProps(post)
-  const description = post.excerpt || post.seoDescription || ''
+  const description = post.excerpt || post.metaDescription || ''
 
   return (
     <article className={styles.card}>

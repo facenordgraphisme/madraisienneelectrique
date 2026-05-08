@@ -61,11 +61,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: post.seoTitle || post.title,
-    description: post.metaDescription || post.seoDescription || post.excerpt,
+    description: post.metaDescription || post.excerpt,
     alternates: { canonical: canonicalUrl },
     openGraph: {
       title: post.seoTitle || post.title,
-      description: post.metaDescription || post.seoDescription || post.excerpt,
+      description: post.metaDescription || post.excerpt,
       url: canonicalUrl,
       type: 'article',
       publishedTime: post.publishedAt,
@@ -282,7 +282,7 @@ export default async function ArticlePage({ params }: Props) {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: post.title,
-      description: post.metaDescription || post.seoDescription || post.excerpt,
+      description: post.metaDescription || post.excerpt,
       image: imageUrl,
       datePublished: post.publishedAt,
       author: {

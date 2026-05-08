@@ -6,7 +6,34 @@ import { getPostBySlug, getAllPostSlugs, getRelatedPosts } from '@/sanity/querie
 import { urlFor } from '@/sanity/image'
 import ArticleCard from '@/components/ArticleCard'
 import sanitizeHtml from 'sanitize-html'
+import { PortableText } from '@portabletext/react'
 import styles from './ArticlePage.module.css'
+
+const portableTextComponents = {
+  types: {
+    image: ({ value }: any) => (
+      <div className={styles.portableImage}>
+        <img
+          src={urlFor(value).url()}
+          alt={value.alt || 'Image article'}
+          loading="lazy"
+        />
+        {value.caption && <figcaption>{value.caption}</figcaption>}
+      </div>
+    ),
+    button: ({ value }: any) => (
+      <a 
+        href={value.url} 
+        className={`${styles.portableButton} ${value.style === 'secondary' ? styles.btnSecondary : styles.btnPrimary} content-btn`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {value.text}
+        <span className={styles.btnArrow}>→</span>
+      </a>
+    ),
+  },
+}
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -34,11 +61,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: post.seoTitle || post.title,
-    description: post.seoDescription || post.excerpt,
+    description: post.metaDescription || post.seoDescription || post.excerpt,
     alternates: { canonical: canonicalUrl },
     openGraph: {
       title: post.seoTitle || post.title,
-      description: post.seoDescription || post.excerpt,
+      description: post.metaDescription || post.seoDescription || post.excerpt,
       url: canonicalUrl,
       type: 'article',
       publishedTime: post.publishedAt,
@@ -47,18 +74,131 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function transformAffiliateLinks(html: string): string {
+  // Detect links that should be buttons based on text or destination
+  const buttonKeywords = [
+    'voir le prix', 'acheter', 'commander', 'découvrir', 'profiter de l\'offre', 
+    'en savoir plus', 'voir sur amazon', 'voir le produit', 'découvrez l\'offre'
+  ];
+  
+  // This regex finds <a> tags and checks their content/href
+  // Improved to handle multi-line content and different quote types
+  return html.replace(/<a\s+([^>]*href=["']([^"']+)["'][^>]*)>([\s\S]*?)<\/a>/gi, (match, attribs, href, text) => {
+    const lowerText = text.toLowerCase().trim();
+    const isAmazon = href.includes('amazon') || href.includes('amzn.to');
+    const hasKeyword = buttonKeywords.some(kw => lowerText.includes(kw));
+    
+    // If it's a button-like link, ensure it has the content-btn class
+    if ((isAmazon || hasKeyword) && !attribs.includes('content-btn')) {
+      // If it already has a class, append to it, otherwise add class="content-btn"
+      if (attribs.includes('class=')) {
+        // Handle both double and single quotes for class attribute
+        return `<a ${attribs.replace(/class=(["'])/i, 'class=$1content-btn ')}>${text}</a>`;
+      } else {
+        return `<a class="content-btn" ${attribs}>${text}</a>`;
+      }
+    }
+    return match;
+  });
+}
+
+function fixWordPressUrls(html: string): string {
+  // Replace absolute WP URLs with relative ones to load from public folder
+  return html.replace(/https?:\/\/ma-draisienne-electrique\.fr\/wp-content\/uploads\//gi, '/wp-content/uploads/');
+}
+
+// --- Audit Improvements: Components ---
+
+function KeyTakeaways({ items }: { items?: string[] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <div className={styles.takeawaysBox}>
+      <div className={styles.takeawaysHeader}>
+        <span className={styles.takeawaysIcon}>📌</span>
+        <h3>Ce qu&apos;il faut retenir</h3>
+      </div>
+      <ul className={styles.takeawaysList}>
+        {items.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function AuthorBox({ author }: { author?: any }) {
+  if (!author) return null;
+  return (
+    <div className={styles.authorCard}>
+      {author.image && (
+        <div className={styles.authorAvatar}>
+          <img src={author.image} alt={author.name} />
+        </div>
+      )}
+      <div className={styles.authorInfo}>
+        <span className={styles.authorLabel}>Écrit par</span>
+        <h4 className={styles.authorName}>{author.name}</h4>
+        {author.role && <p className={styles.authorRole}>{author.role}</p>}
+        {author.bio && <p className={styles.authorBio}>{author.bio}</p>}
+      </div>
+    </div>
+  );
+}
+
+function FAQSection({ items }: { items?: { question: string, answer: string }[] }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <div className={styles.faqContainer}>
+      <h2 className={styles.faqTitle}>Questions fréquentes (FAQ)</h2>
+      <div className={styles.faqList}>
+        {items.map((item, i) => (
+          <div key={i} className={styles.faqItem}>
+            <h3 className={styles.faqQuestion}>{item.question}</h3>
+            <p className={styles.faqAnswer}>{item.answer}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Audit Improvements: Linguistic Filter ---
+
+function filterForbiddenWords(html: string): string {
+  // Audit Priority 5: Remove AI-generated filler words
+  return html
+    .replace(/\bindispensable\b/gi, 'essentiel')
+    .replace(/\bincontournable\b/gi, 'recommandé')
+    .replace(/\brévolutionnaire\b/gi, 'innovant')
+    .replace(/\ben conclusion\b/gi, 'En résumé')
+    .replace(/n'hésitez pas à/gi, 'pensez à');
+}
+
 function cleanWordPressHtml(html: string): string {
-  return sanitizeHtml(html, {
+  // Apply linguistic filters first
+  const filteredHtml = filterForbiddenWords(html);
+  const preparedHtml = transformAffiliateLinks(fixWordPressUrls(filteredHtml));
+  
+  return sanitizeHtml(preparedHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
       'img', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br', 'hr', 'sup', 'sub', 'abbr',
+      'svg', 'line', 'rect', 'text', 'circle', 'path', 'polyline', 'polygon', 'g', 'title',
     ]),
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
-      'img': ['src', 'alt', 'width', 'height', 'loading'],
+      'img': ['src', 'alt', 'width', 'height', 'loading', 'class', 'data-src', 'data-lazy-src', 'srcset', 'sizes'],
       'a': ['href', 'target', 'rel', 'id', 'class'],
       'th': ['id', 'colspan', 'rowspan'],
       'td': ['id', 'colspan', 'rowspan'],
+      'svg': ['viewBox', 'width', 'height', 'role', 'aria-label', 'style', 'xmlns'],
+      'line': ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-dasharray'],
+      'rect': ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill'],
+      'text': ['x', 'y', 'text-anchor', 'fill', 'font-size', 'font-weight'],
+      'path': ['d', 'fill', 'stroke', 'stroke-width'],
+      'circle': ['cx', 'cy', 'r', 'fill'],
+      'polyline': ['points', 'fill', 'stroke', 'stroke-width'],
+      'polygon': ['points', 'fill', 'stroke', 'stroke-width'],
       '*': ['id', 'class'],
     },
     transformTags: {
@@ -83,16 +223,30 @@ function cleanWordPressHtml(html: string): string {
           },
         }
       },
-      // Fix WP srcset images — strip srcset/sizes, keep src
+      // Fix WP images - handle lazy loading, strip srcset, keep classes
       'img': (tagName: string, attribs: Record<string, string>) => {
-        // Clean double quotes in attributes (WordPress CSV artifact)
-        const cleanSrc = (attribs.src || '').replace(/^"|"$/g, '').replace(/&quot;/g, '')
+        // WordPress lazy-loading often puts the real URL in data-src or data-lazy-src
+        let src = attribs.src || '';
+        const dataSrc = attribs['data-src'] || attribs['data-lazy-src'] || attribs['data-actual-src'];
+        
+        // If src is a data URI (placeholder) and we have a data-src, use the real one
+        if ((src.startsWith('data:image') || src.includes('placeholder')) && dataSrc) {
+          src = dataSrc;
+        }
+
+        // Clean double quotes from migration artifacts
+        const cleanSrc = src.replace(/^"|"$/g, '').replace(/&quot;/g, '');
+        const cleanAlt = (attribs.alt || '').replace(/^"|"$/g, '').replace(/&quot;/g, '');
+
         return {
           tagName,
           attribs: {
+            ...attribs,
             src: cleanSrc,
-            alt: (attribs.alt || '').replace(/^"|"$/g, ''),
+            alt: cleanAlt,
             loading: 'lazy',
+            // Preserve original classes and add a fluid class
+            class: `${attribs.class || ''} article-img`.trim(),
           },
         }
       },
@@ -122,23 +276,55 @@ export default async function ArticlePage({ params }: Props) {
 
   const cleanContent = post.content ? cleanWordPressHtml(post.content) : ''
 
-  // JSON-LD structured data
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.title,
-    description: post.seoDescription || post.excerpt,
-    image: imageUrl,
-    datePublished: post.publishedAt,
-    publisher: {
-      '@type': 'Organization',
-      name: 'Ma Draisienne Électrique',
-      url: 'https://ma-draisienne-electrique.fr',
+  // JSON-LD structured data (Audit Priority 2)
+  const jsonLd: any = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.metaDescription || post.seoDescription || post.excerpt,
+      image: imageUrl,
+      datePublished: post.publishedAt,
+      author: {
+        '@type': 'Person',
+        name: post.author?.name || 'Anne-Sophie',
+        url: post.author?.socialLink || 'https://ma-draisienne-electrique.fr',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Ma Draisienne Électrique',
+        url: 'https://ma-draisienne-electrique.fr',
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://ma-draisienne-electrique.fr/${slug}`,
+      },
     },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://ma-draisienne-electrique.fr/${slug}`,
-    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': 'https://ma-draisienne-electrique.fr' },
+        { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://ma-draisienne-electrique.fr/blog' },
+        { '@type': 'ListItem', 'position': 3, 'name': post.category?.title, 'item': `https://ma-draisienne-electrique.fr/categorie/${post.category?.slug}` },
+        { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': `https://ma-draisienne-electrique.fr/${slug}` }
+      ]
+    }
+  ]
+
+  if (post.faq && post.faq.length > 0) {
+    jsonLd.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': post.faq.map(item => ({
+        '@type': 'Question',
+        'name': item.question,
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': item.answer
+        }
+      }))
+    })
   }
 
   return (
@@ -197,6 +383,9 @@ export default async function ArticlePage({ params }: Props) {
         {/* ——— Body ——— */}
         <div className={`container ${styles.layout}`}>
           <div className={styles.contentCol}>
+            {/* Audit Improvement: Key Takeaways (TL;DR) */}
+            <KeyTakeaways items={post.keyTakeaways} />
+
             {cleanContent ? (
               <div
                 className="article-body"
@@ -205,6 +394,12 @@ export default async function ArticlePage({ params }: Props) {
             ) : (
               <p style={{ color: 'var(--color-text-muted)' }}>Contenu en cours de chargement…</p>
             )}
+
+            {/* Audit Improvement: FAQ Section */}
+            <FAQSection items={post.faq} />
+
+            {/* Audit Improvement: Author Box (E-E-A-T) */}
+            <AuthorBox author={post.author} />
           </div>
 
           {/* ——— Sidebar ——— */}

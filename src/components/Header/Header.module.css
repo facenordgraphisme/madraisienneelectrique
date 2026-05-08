@@ -12,10 +12,10 @@
 }
 
 .scrolled {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(10, 10, 10, 0.9);
   backdrop-filter: blur(12px);
   height: 70px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -46,11 +46,11 @@
 }
 
 .logoPart2 {
-  color: #4ade80; /* Pale but vibrant green */
+  color: var(--color-accent);
 }
 
 .scrolled .logoPart1, .scrolled .logoPart3 {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 .nav {
@@ -74,7 +74,7 @@
 }
 
 .scrolled .navLink {
-  color: #000000;
+  color: #FFFFFF;
 }
 
 .scrolled .navLink:hover {
@@ -113,7 +113,7 @@
 }
 
 .scrolled .burgerLine {
-  background: #000000;
+  background: #FFFFFF;
 }
 
 .mobileMenu {

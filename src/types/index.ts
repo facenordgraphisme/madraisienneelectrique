@@ -7,6 +7,14 @@ export interface SanityCategory {
   description?: string
 }
 
+export interface SanityAuthor {
+  name: string
+  bio?: string
+  image?: string
+  role?: string
+  socialLink?: string
+}
+
 export interface SanityPost {
   _id: string
   title: string
@@ -14,8 +22,11 @@ export interface SanityPost {
   publishedAt: string
   excerpt?: string
   content?: string
+  body?: any[]
   seoTitle?: string
-  seoDescription?: string
+  metaDescription?: string
+  keyTakeaways?: string[]
+  faq?: { question: string; answer: string }[]
   featuredImage?: {
     asset?: SanityImageAssetDocument
     alt?: string
@@ -24,4 +35,5 @@ export interface SanityPost {
   featuredImageUrl?: string
   featuredImageAlt?: string
   category?: SanityCategory
+  author?: SanityAuthor
 }

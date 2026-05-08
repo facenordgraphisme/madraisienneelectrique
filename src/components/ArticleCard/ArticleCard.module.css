@@ -1,7 +1,8 @@
 .card {
   display: flex;
   flex-direction: column;
-  background: #FFFFFF;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-2xl);
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base), background-color var(--transition-base);
@@ -10,6 +11,8 @@
 
 .card:hover {
   transform: translateY(-8px);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-lg);
 }
 
 .imageWrapper {

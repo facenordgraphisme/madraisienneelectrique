@@ -52,6 +52,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl = 'https://ma-draisienne-electrique.fr'
   const canonicalUrl = `${siteUrl}/${slug}`
 
+  // Audit Priority: Handle title length (Avoid suffix if too long)
+  const baseTitle = post.seoTitle || post.title
+  const finalTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | Ma Draisienne Électrique`
+
+  // Audit Priority: Fallback for missing meta description
+  const metaDesc = post.metaDescription || post.excerpt || ''
+  const cleanMetaDesc = metaDesc.length > 160 ? metaDesc.slice(0, 157) + '...' : metaDesc
+
   let imageUrl: string | undefined
   if (post.featuredImage?.asset) {
     imageUrl = urlFor(post.featuredImage).width(1200).height(630).fit('crop').url()
@@ -60,16 +68,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: post.seoTitle || post.title,
-    description: post.metaDescription || post.excerpt,
+    title: { absolute: finalTitle },
+    description: cleanMetaDesc,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: post.seoTitle || post.title,
-      description: post.metaDescription || post.excerpt,
+      title: finalTitle,
+      description: cleanMetaDesc,
       url: canonicalUrl,
       type: 'article',
       publishedTime: post.publishedAt,
       images: imageUrl ? [{ url: imageUrl, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: finalTitle,
+      description: cleanMetaDesc,
+      images: imageUrl ? [imageUrl] : [],
     },
   }
 }
@@ -191,15 +205,16 @@ function cleanWordPressHtml(html: string): string {
       'a': ['href', 'target', 'rel', 'id', 'class'],
       'th': ['id', 'colspan', 'rowspan'],
       'td': ['id', 'colspan', 'rowspan'],
-      'svg': ['viewBox', 'width', 'height', 'role', 'aria-label', 'style', 'xmlns'],
-      'line': ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-dasharray'],
-      'rect': ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill'],
-      'text': ['x', 'y', 'text-anchor', 'fill', 'font-size', 'font-weight'],
-      'path': ['d', 'fill', 'stroke', 'stroke-width'],
-      'circle': ['cx', 'cy', 'r', 'fill'],
-      'polyline': ['points', 'fill', 'stroke', 'stroke-width'],
-      'polygon': ['points', 'fill', 'stroke', 'stroke-width'],
-      '*': ['id', 'class'],
+      'svg': ['viewBox', 'width', 'height', 'role', 'aria-label', 'style', 'xmlns', 'class', 'preserveAspectRatio'],
+      'line': ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity'],
+      'rect': ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'opacity'],
+      'text': ['x', 'y', 'text-anchor', 'fill', 'font-size', 'font-weight', 'opacity'],
+      'path': ['d', 'fill', 'stroke', 'stroke-width', 'opacity'],
+      'circle': ['cx', 'cy', 'r', 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity', 'transform'],
+      'polyline': ['points', 'fill', 'stroke', 'stroke-width', 'opacity'],
+      'polygon': ['points', 'fill', 'stroke', 'stroke-width', 'opacity'],
+      'g': ['transform', 'opacity', 'class'],
+      '*': ['id', 'class', 'style'],
     },
     transformTags: {
       // Make external links open in new tab with noopener

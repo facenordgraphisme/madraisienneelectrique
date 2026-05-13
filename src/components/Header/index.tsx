@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import styles from './Header.module.css'
+import ThemeToggle from '../ThemeToggle'
+
 
 const NAV_LINKS = [
   { href: '/', label: 'Accueil' },
@@ -58,10 +60,14 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* CTA */}
-        <Link href="/meilleures-draisiennes-electriques-pour-adultes-en-2025" className={`btn btn--primary ${styles.cta}`}>
-          Guide 2025
-        </Link>
+        {/* CTA & Theme */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <ThemeToggle />
+          <Link href="/meilleures-draisiennes-electriques-pour-adultes-en-2025" className={`btn btn--primary ${styles.cta}`}>
+            Guide 2025
+          </Link>
+        </div>
+
 
         {/* Mobile burger */}
         <button

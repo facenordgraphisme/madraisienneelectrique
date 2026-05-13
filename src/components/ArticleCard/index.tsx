@@ -42,7 +42,7 @@ export default function ArticleCard({ post, priority = false }: ArticleCardProps
 
   return (
     <article className={styles.card}>
-      <Link href={`/${post.slug}`} className={styles.imageWrap}>
+      <Link href={`/${post.slug}`} className={styles.imageWrapper}>
         <Image
           src={img.src}
           alt={img.alt}
@@ -59,7 +59,7 @@ export default function ArticleCard({ post, priority = false }: ArticleCardProps
         )}
       </Link>
 
-      <div className={styles.body}>
+      <div className={styles.content}>
         {post.publishedAt && (
           <time className={styles.date} dateTime={post.publishedAt}>
             {formatDate(post.publishedAt)}

@@ -205,10 +205,10 @@ function cleanWordPressHtml(html: string): string {
       'a': ['href', 'target', 'rel', 'id', 'class'],
       'th': ['id', 'colspan', 'rowspan'],
       'td': ['id', 'colspan', 'rowspan'],
-      'svg': ['viewBox', 'width', 'height', 'role', 'aria-label', 'style', 'xmlns', 'class', 'preserveAspectRatio'],
+      'svg': ['viewbox', 'width', 'height', 'role', 'aria-label', 'style', 'xmlns', 'class', 'preserveaspectratio'],
       'line': ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity'],
       'rect': ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'opacity'],
-      'text': ['x', 'y', 'text-anchor', 'fill', 'font-size', 'font-weight', 'opacity'],
+      'text': ['x', 'y', 'dx', 'dy', 'text-anchor', 'fill', 'font-size', 'font-weight', 'opacity'],
       'path': ['d', 'fill', 'stroke', 'stroke-width', 'opacity'],
       'circle': ['cx', 'cy', 'r', 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity', 'transform'],
       'polyline': ['points', 'fill', 'stroke', 'stroke-width', 'opacity'],
@@ -216,6 +216,7 @@ function cleanWordPressHtml(html: string): string {
       'g': ['transform', 'opacity', 'class'],
       '*': ['id', 'class', 'style'],
     },
+    allowedStyles: false as any,
     transformTags: {
       // Make external links open in new tab with noopener
       'a': (tagName: string, attribs: Record<string, string>) => {

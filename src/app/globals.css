@@ -486,6 +486,14 @@ a {
   border: 1px solid var(--color-border);
 }
 
+.article-body svg {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 2.5rem auto;
+}
+
 .article-body figcaption {
   font-size: var(--font-size-xs);
   color: var(--color-text-faint);
@@ -876,5 +884,88 @@ a {
     width: 100%;
     align-items: center;
   }
+}
+
+/* Steps / Numbered List */
+.article-body .steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.article-body .step {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-light);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.article-body .step:hover {
+  border-color: var(--color-border);
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.article-body .step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: var(--color-accent);
+  color: #ffffff !important;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.article-body .step-content {
+  flex: 1;
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.article-body .step-content strong {
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+/* Internal Linking Links */
+.article-body .int-link {
+  display: flex;
+  align-items: center;
+  gap: 0.88rem;
+  background: var(--color-accent-pale);
+  border: 1px solid var(--color-border);
+  color: var(--color-accent) !important;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  font-size: var(--font-size-base);
+}
+
+.article-body .int-link::before {
+  content: "🔗";
+  font-size: 1.1em;
+  filter: grayscale(1) contrast(1.5);
+}
+
+.article-body .int-link:hover {
+  background: var(--color-accent-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  color: var(--color-accent-hover) !important;
 }
 

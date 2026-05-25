@@ -52,9 +52,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl = 'https://ma-draisienne-electrique.fr'
   const canonicalUrl = `${siteUrl}/${slug}`
 
-  // Audit Priority: Handle title length (Avoid suffix if too long)
+  const BRAND_SUFFIX = ' | Ma Draisienne Électrique'
   const baseTitle = post.seoTitle || post.title
-  const finalTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | Ma Draisienne Électrique`
+  const candidate = `${baseTitle}${BRAND_SUFFIX}`
+  const finalTitle = candidate.length <= 62 ? candidate : baseTitle
 
   // Audit Priority: Fallback for missing meta description
   const metaDesc = post.metaDescription || post.excerpt || ''
@@ -434,6 +435,9 @@ export default async function ArticlePage({ params }: Props) {
                 >
                   Voir le prix Amazon
                 </a>
+                <p style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: '0.5rem', textAlign: 'center' }}>
+                  Lien affilié — commission sans surcoût pour vous
+                </p>
               </div>
 
               {/* Related posts */}

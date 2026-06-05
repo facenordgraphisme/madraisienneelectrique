@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${category.title} — Draisiennes Électriques`,
     description: category.description || `Retrouvez tous nos articles dans la catégorie ${category.title}.`,
-    alternates: { canonical: `https://ma-draisienne-electrique.fr/categorie/${slug}` },
+    alternates: { canonical: `https://www.ma-draisienne-electrique.fr/categorie/${slug}` },
   }
 }
 

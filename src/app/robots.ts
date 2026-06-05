@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/studio/',
     },
-    sitemap: 'https://ma-draisienne-electrique.fr/sitemap.xml',
+    sitemap: 'https://www.ma-draisienne-electrique.fr/sitemap.xml',
   }
 }

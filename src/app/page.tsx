@@ -5,7 +5,7 @@ import HomeClient from './HomeClient'
 export const metadata: Metadata = {
   title: 'Ma Draisienne Électrique — Guides, Comparatifs & Conseils 2025',
   description: 'Guide de référence sur les draisiennes électriques en France : comparatifs, avis, législation et conseils pratiques pour faire le bon choix en 2025.',
-  alternates: { canonical: 'https://ma-draisienne-electrique.fr' },
+  alternates: { canonical: 'https://www.ma-draisienne-electrique.fr' },
 }
 
 export default async function HomePage() {

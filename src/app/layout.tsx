@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ma-draisienne-electrique.fr'),
+  metadataBase: new URL('https://www.ma-draisienne-electrique.fr'),
   title: {
     default: 'Ma Draisienne Électrique — Guides, Comparatifs & Conseils 2025',
     template: '%s | Ma Draisienne Électrique',
@@ -14,9 +14,6 @@ export const metadata: Metadata = {
     siteName: 'Ma Draisienne Électrique',
     locale: 'fr_FR',
     type: 'website',
-  },
-  alternates: {
-    canonical: 'https://ma-draisienne-electrique.fr',
   },
   robots: {
     index: true,

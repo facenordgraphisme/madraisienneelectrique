@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostBySlug(slug)
   if (!post) return {}
 
-  const siteUrl = 'https://ma-draisienne-electrique.fr'
+  const siteUrl = 'https://www.ma-draisienne-electrique.fr'
   const canonicalUrl = `${siteUrl}/${slug}`
 
   const BRAND_SUFFIX = ' | Ma Draisienne Électrique'
@@ -305,26 +305,26 @@ export default async function ArticlePage({ params }: Props) {
       author: {
         '@type': 'Person',
         name: post.author?.name || 'Anne-Sophie',
-        url: post.author?.socialLink || 'https://ma-draisienne-electrique.fr',
+        url: post.author?.socialLink || 'https://www.ma-draisienne-electrique.fr',
       },
       publisher: {
         '@type': 'Organization',
         name: 'Ma Draisienne Électrique',
-        url: 'https://ma-draisienne-electrique.fr',
+        url: 'https://www.ma-draisienne-electrique.fr',
       },
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': `https://ma-draisienne-electrique.fr/${slug}`,
+        '@id': `https://www.ma-draisienne-electrique.fr/${slug}`,
       },
     },
     {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       'itemListElement': [
-        { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': 'https://ma-draisienne-electrique.fr' },
-        { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://ma-draisienne-electrique.fr/blog' },
-        { '@type': 'ListItem', 'position': 3, 'name': post.category?.title, 'item': `https://ma-draisienne-electrique.fr/categorie/${post.category?.slug}` },
-        { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': `https://ma-draisienne-electrique.fr/${slug}` }
+        { '@type': 'ListItem', 'position': 1, 'name': 'Accueil', 'item': 'https://www.ma-draisienne-electrique.fr' },
+        { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://www.ma-draisienne-electrique.fr/blog' },
+        { '@type': 'ListItem', 'position': 3, 'name': post.category?.title, 'item': `https://www.ma-draisienne-electrique.fr/categorie/${post.category?.slug}` },
+        { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': `https://www.ma-draisienne-electrique.fr/${slug}` }
       ]
     }
   ]

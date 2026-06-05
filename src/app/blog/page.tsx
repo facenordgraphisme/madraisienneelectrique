@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Blog - Ma Draisienne Électrique',
   description: 'Découvrez tous nos articles, guides d\'achat et tests sur les draisiennes électriques pour adultes et enfants.',
+  alternates: { canonical: 'https://www.ma-draisienne-electrique.fr/blog' },
 }
 
 export default async function BlogPage() {

@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { getAllPostSlugs, getAllCategories } from '@/sanity/queries'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = 'https://ma-draisienne-electrique.fr'
+  const siteUrl = 'https://www.ma-draisienne-electrique.fr'
 
   const [slugs, categories] = await Promise.all([
     getAllPostSlugs(),
@@ -29,6 +29,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
+    },
+    {
+      url: `${siteUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     ...postUrls,
     ...categoryUrls,

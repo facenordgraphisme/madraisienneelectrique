@@ -4,21 +4,21 @@ import { getAllPostSlugs, getAllCategories } from '@/sanity/queries'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = 'https://www.ma-draisienne-electrique.fr'
 
-  const [slugs, categories] = await Promise.all([
+  const [posts, categories] = await Promise.all([
     getAllPostSlugs(),
     getAllCategories(),
   ])
 
-  const postUrls: MetadataRoute.Sitemap = slugs.map((slug) => ({
-    url: `${siteUrl}/${slug}`,
-    lastModified: new Date(),
+  const postUrls: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${siteUrl}/${post.slug}`,
+    lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date('2025-05-01'),
     changeFrequency: 'monthly',
     priority: 0.8,
   }))
 
   const categoryUrls: MetadataRoute.Sitemap = categories.map((cat) => ({
     url: `${siteUrl}/categorie/${cat.slug}`,
-    lastModified: new Date(),
+    lastModified: new Date('2025-05-01'),
     changeFrequency: 'weekly',
     priority: 0.6,
   }))

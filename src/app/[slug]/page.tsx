@@ -22,8 +22,8 @@ const portableTextComponents = {
       </div>
     ),
     button: ({ value }: any) => (
-      <a 
-        href={value.url} 
+      <a
+        href={value.url}
         className={`${styles.portableButton} ${value.style === 'secondary' ? styles.btnSecondary : styles.btnPrimary} content-btn`}
         target="_blank"
         rel="noopener noreferrer"
@@ -40,8 +40,8 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const slugs = await getAllPostSlugs()
-  return slugs.map((slug) => ({ slug }))
+  const posts = await getAllPostSlugs()
+  return posts.map((post) => ({ slug: post.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -92,17 +92,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function transformAffiliateLinks(html: string): string {
   // Detect links that should be buttons based on text or destination
   const buttonKeywords = [
-    'voir le prix', 'acheter', 'commander', 'découvrir', 'profiter de l\'offre', 
+    'voir le prix', 'acheter', 'commander', 'découvrir', 'profiter de l\'offre',
     'en savoir plus', 'voir sur amazon', 'voir le produit', 'découvrez l\'offre'
   ];
-  
+
   // This regex finds <a> tags and checks their content/href
   // Improved to handle multi-line content and different quote types
   return html.replace(/<a\s+([^>]*href=["']([^"']+)["'][^>]*)>([\s\S]*?)<\/a>/gi, (match, attribs, href, text) => {
     const lowerText = text.toLowerCase().trim();
     const isAmazon = href.includes('amazon') || href.includes('amzn.to');
     const hasKeyword = buttonKeywords.some(kw => lowerText.includes(kw));
-    
+
     // If it's a button-like link, ensure it has the content-btn class
     if ((isAmazon || hasKeyword) && !attribs.includes('content-btn')) {
       // If it already has a class, append to it, otherwise add class="content-btn"
@@ -118,8 +118,18 @@ function transformAffiliateLinks(html: string): string {
 }
 
 function fixWordPressUrls(html: string): string {
-  // Replace absolute WP URLs with relative ones to load from public folder
-  return html.replace(/https?:\/\/ma-draisienne-electrique\.fr\/wp-content\/uploads\//gi, '/wp-content/uploads/');
+  // Fix image URLs: wp-content stays relative, loaded from public/
+  let fixed = html.replace(
+    /https?:\/\/(?:www\.)?ma-draisienne-electrique\.fr\/wp-content\/uploads\//gi,
+    '/wp-content/uploads/'
+  );
+  // Fix internal links: convert absolute domain URLs to root-relative paths
+  // Strips trailing slash so Next.js canonical URLs match (no trailing slash)
+  fixed = fixed.replace(
+    /https?:\/\/(?:www\.)?ma-draisienne-electrique\.fr\/((?!wp-content)[^"'\s>]*?)\/?(?=["'\s>])/gi,
+    '/$1'
+  );
+  return fixed;
 }
 
 // --- Audit Improvements: Components ---
@@ -193,7 +203,7 @@ function cleanWordPressHtml(html: string): string {
   // Apply linguistic filters first
   const filteredHtml = filterForbiddenWords(html);
   const preparedHtml = transformAffiliateLinks(fixWordPressUrls(filteredHtml));
-  
+
   return sanitizeHtml(preparedHtml, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
       'img', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
@@ -223,14 +233,14 @@ function cleanWordPressHtml(html: string): string {
       'a': (tagName: string, attribs: Record<string, string>) => {
         const href = attribs.href || ''
         const isExternal = href.startsWith('http') && !href.includes('ma-draisienne-electrique.fr')
-        
+
         // Detect button-like links (fallback to class only since sanitize-html doesn't provide text here)
         const isButton = (attribs.class && (
-          attribs.class.includes('button') || 
-          attribs.class.includes('btn') || 
+          attribs.class.includes('button') ||
+          attribs.class.includes('btn') ||
           attribs.class.includes('wp-block-button')
         ))
-        
+
         return {
           tagName,
           attribs: {
@@ -245,7 +255,7 @@ function cleanWordPressHtml(html: string): string {
         // WordPress lazy-loading often puts the real URL in data-src or data-lazy-src
         let src = attribs.src || '';
         const dataSrc = attribs['data-src'] || attribs['data-lazy-src'] || attribs['data-actual-src'];
-        
+
         // If src is a data URI (placeholder) and we have a data-src, use the real one
         if ((src.startsWith('data:image') || src.includes('placeholder')) && dataSrc) {
           src = dataSrc;

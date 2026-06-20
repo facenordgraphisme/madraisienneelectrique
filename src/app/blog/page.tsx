@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Blog - Ma Draisienne Électrique',
-  description: 'Découvrez tous nos articles, guides d\'achat et tests sur les draisiennes électriques pour adultes et enfants.',
+  title: 'Blog — Guides & Comparatifs',
+  description: 'Tous nos guides d\'achat, tests et comparatifs sur les draisiennes électriques pour adultes et enfants. Mis à jour en 2026.',
   alternates: { canonical: 'https://www.ma-draisienne-electrique.fr/blog' },
 }
 

@@ -86,13 +86,12 @@ export async function getRelatedPosts(categoryId: string, excludeSlug: string, l
   )
 }
 
-export async function getAllPostSlugs(): Promise<string[]> {
-  const posts = await client.fetch(
-    `*[_type == "post"] {"slug": slug.current}`,
+export async function getAllPostSlugs(): Promise<{ slug: string; publishedAt: string }[]> {
+  return client.fetch(
+    `*[_type == "post"] {"slug": slug.current, publishedAt}`,
     {},
     { cache: 'no-store' }
   )
-  return posts.map((p: { slug: string }) => p.slug)
 }
 
 // ——— Categories ———

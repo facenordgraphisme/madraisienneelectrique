@@ -1,4 +1,4 @@
-﻿import { defineField, defineType } from 'sanity'
+import { defineField, defineType } from 'sanity'
 import { DocumentTextIcon } from '@sanity/icons'
 
 export const postType = defineType({

@@ -1,4 +1,4 @@
-﻿import { notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getAllCategories, getPostsByCategory } from '@/sanity/queries'
 import ArticleCard from '@/components/ArticleCard'

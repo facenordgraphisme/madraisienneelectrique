@@ -1,4 +1,4 @@
-﻿import { type SchemaTypeDefinition } from 'sanity'
+import { type SchemaTypeDefinition } from 'sanity'
 import { defineField, defineType } from 'sanity'
 
 export const categoryType: SchemaTypeDefinition = defineType({

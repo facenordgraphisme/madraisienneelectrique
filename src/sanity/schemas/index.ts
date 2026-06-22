@@ -1,4 +1,4 @@
-﻿import { type SchemaTypeDefinition } from 'sanity'
+import { type SchemaTypeDefinition } from 'sanity'
 import { postType } from './post'
 import { categoryType } from './category'
 import blockContent from './blockContent'

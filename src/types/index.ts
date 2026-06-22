@@ -1,4 +1,4 @@
-﻿import { SanityImageAssetDocument } from '@sanity/client'
+import { SanityImageAssetDocument } from '@sanity/client'
 
 export interface SanityCategory {
   _id: string

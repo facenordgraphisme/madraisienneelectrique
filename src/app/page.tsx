@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { getLatestPosts, getAllCategories } from '@/sanity/queries'
 import HomeClient from './HomeClient'
 

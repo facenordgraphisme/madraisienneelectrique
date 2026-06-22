@@ -59,8 +59,8 @@ export default function Hero() {
       {/* Background Image */}
       <div ref={bgRef} className={styles.heroBg}>
         <Image
-          src="/premium_electric_draisienne_hero_1778061990656.png"
-          alt="Premium Electric Draisienne"
+          src="/hero-bg.jpg"
+          alt="Draisienne électrique en ville"
           fill
           className={styles.heroImg}
           priority
